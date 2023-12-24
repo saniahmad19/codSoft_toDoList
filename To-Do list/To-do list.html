@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #taskList {
+            width: 300px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #taskList header {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        #taskList img{
+            width: 100%;
+            height: 20%;
+            
+        }
+        #taskList ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #taskList li {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #taskList li:last-child {
+            border-bottom: none;
+        }
+
+        #taskList input[type="text"] {
+            width: 70%;
+            padding: 8px;
+            margin: 5px;
+        }
+
+        #taskList button {
+            padding: 8px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        #taskList button.delete {
+            background-color: #f44336;
+            color: #fff;
+            border: none;
+        }
+    </style>
+    <title>Task List App</title>
+</head>
+<body>
+    <div id="taskList">
+        <header>To-Do List</header>
+        <img src="2.jpg">
+        <ul id="tasks"></ul>
+        <div>
+            <input type="text" id="newTask" placeholder="New task...">
+            <button onclick="addTask()">Add</button>
+        </div>
+    </div>
+
+    <script>
+        // Load tasks from local storage on page load
+        document.addEventListener("DOMContentLoaded", function () {
+            loadTasks();
+        });
+
+        function addTask() {
+            var taskInput = document.getElementById("newTask");
+            var taskText = taskInput.value.trim();
+
+            if (taskText !== "") {
+                var tasks = getTasks();
+                tasks.push(taskText);
+                saveTasks(tasks);
+                renderTasks();
+                taskInput.value = "";
+            }
+        }
+
+        function editTask(index) {
+            var tasks = getTasks();
+            var updatedTask = prompt("Edit task:", tasks[index]);
+            if (updatedTask !== null) {
+                tasks[index] = updatedTask.trim();
+                saveTasks(tasks);
+                renderTasks();
+            }
+        }
+
+        function deleteTask(index) {
+            var tasks = getTasks();
+            tasks.splice(index, 1);
+            saveTasks(tasks);
+            renderTasks();
+        }
+
+        function getTasks() {
+            return JSON.parse(localStorage.getItem("tasks")) || [];
+        }
+
+        function saveTasks(tasks) {
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+        }
+
+        function renderTasks() {
+            var tasksContainer = document.getElementById("tasks");
+            var tasks = getTasks();
+
+            // Clear existing tasks
+            tasksContainer.innerHTML = "";
+
+            // Render tasks
+            tasks.forEach(function (task, index) {
+                var li = document.createElement("li");
+                li.innerHTML = `
+                    <span>${task}</span>
+                    <span>
+                        <button onclick="editTask(${index})">Edit</button>
+                        <button class="delete" onclick="deleteTask(${index})">Delete</button>
+                    </span>
+                `;
+                tasksContainer.appendChild(li);
+            });
+        }
+
+        function loadTasks() {
+            renderTasks();
+        }
+    </script>
+</body>
+</html>
